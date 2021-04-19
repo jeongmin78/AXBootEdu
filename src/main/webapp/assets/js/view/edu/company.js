@@ -3,7 +3,8 @@ var ACTIONS = axboot.actionExtend(fnObj, {
     PAGE_SEARCH: function (caller, act, data) {
         axboot.ajax({
             type: "GET",
-            url: ["samples", "parent"],
+//            url: "/api/v1/company",
+            url: "/api/v1/company/QueryDsl",
             data: caller.searchView.getData(),
             callback: function (res) {
                 caller.gridView01.setData(res);
@@ -19,16 +20,16 @@ var ACTIONS = axboot.actionExtend(fnObj, {
         return false;
     },
     PAGE_SAVE: function (caller, act, data) {
-        var saveList = [].concat(caller.gridView01.getData("modified"));
+        var saveList = [].concat(caller.gridView01.getData());
         saveList = saveList.concat(caller.gridView01.getData("deleted"));
-        return;
+
         axboot.ajax({
             type: "PUT",
-            url: ["samples", "parent"],
+            url: "/api/v1/company",
             data: JSON.stringify(saveList),
             callback: function (res) {
                 ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
-                axToast.push(LANG("ax.script.save"));
+                axToast.push("저장 되었습니다");
             }
         });
     },
@@ -40,27 +41,24 @@ var ACTIONS = axboot.actionExtend(fnObj, {
     },
     ITEM_DEL: function (caller, act, data) {
         caller.gridView01.delRow("selected");
+    },
+    dispatch: function (caller, act, data) {
+        var result = ACTIONS.exec(caller, act, data);
+        if (result != "error") {
+            return result;
+        } else {
+            // 직접코딩
+            return false;
+        }
     }
 });
 
-//fnObj 기본 함수 스타트와 리사이즈
+// fnObj 기본 함수 스타트와 리사이즈
 fnObj.pageStart = function () {
     this.pageButtonView.initView();
     this.searchView.initView();
     this.gridView01.initView();
 
-    axboot.buttonClick(null, "data-page-btn2",{
-        "search":function() {
-            console.log('data-page-btn2.search');
-        },
-        "save":function() {
-            console.log('data-page-btn2.save');
-        },
-        "delete":function() {
-            console.log('data-page-btn2.delete');
-        }        
-    });
-    
     ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
 };
 
@@ -93,11 +91,17 @@ fnObj.searchView = axboot.viewExtend(axboot.searchView, {
     initView: function () {
         this.target = $(document["searchView0"]);
         this.target.attr("onsubmit", "return ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);");
-        this.filter = $("#filter");
+        this.company = $("#company");
+        this.ceo = $("#ceo");
+        this.bizno = $("#bizno");
     },
     getData: function () {
         return {
-            filter: this.filter.val()
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            company: this.company.val(),
+            ceo: this.ceo.val(),
+            bizno: this.bizno.val()
         }
     }
 });
@@ -116,12 +120,18 @@ fnObj.gridView01 = axboot.viewExtend(axboot.gridView, {
             multipleSelect: true,
             target: $('[data-ax5grid="grid-view-01"]'),
             columns: [
-                {key: "key", label: "KEY", width: 160, align: "left", editor: "text"},
-                {key: "value", label: "VALUE", width: 350, align: "left", editor: "text"},
-                {key: "etc1", label: "ETC1", width: 100, align: "center", editor: "text"},
-                {key: "etc2", label: "ETC2", width: 100, align: "center", editor: "text"},
-                {key: "etc3", label: "ETC3", width: 100, align: "center", editor: "text"},
-                {key: "etc4", label: "ETC4", width: 100, align: "center", editor: "text"}
+                {key: "id", label: "ID", width: 100, align: "left", editor: "text"},
+                {key: "companyNm", label: "회사명", width: 300, align: "left", editor: "text"},
+                {key: "ceo", label: "대표자", width: 100, align: "center", editor: "text"},
+                {key: "bizno", label: "사업자번호", width: 100, align: "center", editor: "text"},
+                {key: "tel", label: "전화번호", width: 100, align: "center", editor: "text"},
+                {key: "address", label: "주소", width: 100, align: "center", editor: "text"},
+                {key: "addressDetail", label: "상세주소", width: 100, align: "center", editor: "text"},
+                {key: "email", label: "이메일", width: 100, align: "center", editor: "text"},
+                {key: "remark", label: "비고", width: 100, align: "center", editor: "text"},
+                {key: "createdAt", label: "등록시간", width: 100, align: "center", editor: "text"},
+                {key: "updatedAt", label: "수정시간", width: 100, align: "center", editor: "text"}
+
             ],
             body: {
                 onClick: function () {
