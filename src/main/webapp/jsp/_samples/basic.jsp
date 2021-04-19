@@ -14,6 +14,11 @@
     <jsp:body>
 
         <ax:page-buttons></ax:page-buttons>
+        <div class="button-warp">
+            <button type="button" class="btn-btn-info" data-page-btn="search"><i class="cqc-magnifier"></i>조회1</button>
+            <button type="button" class="btn-btn-info" data-page-btn="save"><i class="cqc-magnifier"></i>저장1</button>
+            <button type="button" class="btn-btn-info" data-page-btn="delete"><i class="cqc-magnifier"></i>삭제1</button>
+        </div>
 
         <div role="page-header">
             <ax:form name="searchView0">
