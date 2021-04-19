@@ -21,7 +21,6 @@ var ACTIONS = axboot.actionExtend(fnObj, {
     PAGE_SAVE: function (caller, act, data) {
         var saveList = [].concat(caller.gridView01.getData("modified"));
         saveList = saveList.concat(caller.gridView01.getData("deleted"));
-        return;
         axboot.ajax({
             type: "PUT",
             url: ["samples", "parent"],
@@ -43,24 +42,12 @@ var ACTIONS = axboot.actionExtend(fnObj, {
     }
 });
 
-//fnObj 기본 함수 스타트와 리사이즈
+// fnObj 기본 함수 스타트와 리사이즈
 fnObj.pageStart = function () {
     this.pageButtonView.initView();
     this.searchView.initView();
     this.gridView01.initView();
 
-    axboot.buttonClick(null, "data-page-btn2",{
-        "search":function() {
-            console.log('data-page-btn2.search');
-        },
-        "save":function() {
-            console.log('data-page-btn2.save');
-        },
-        "delete":function() {
-            console.log('data-page-btn2.delete');
-        }        
-    });
-    
     ACTIONS.dispatch(ACTIONS.PAGE_SEARCH);
 };
 
